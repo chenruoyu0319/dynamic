@@ -1,0 +1,126 @@
+server:
+  port: 80
+  servlet:
+    context-path: / #项目的上下文路径
+spring:
+  # 项目名
+  application:
+    name: qa-rabbitmq-producer
+  # 配置rabbitMq服务器
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: cry
+    password: cry
+    #虚拟host 可以不publisher-returns: true设置,使用server默认host
+    virtual-host: /qa
+    #confirm确认模式: 确认消息已发送到交换机(Exchange)
+    publisher-confirm-type: correlated
+    #return退回模式: 确认消息已发送到队列(Queue)
+    publisher-returns: true
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8 #时区，一定要加，否则会默认为格林尼治时间，即少8小时
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+      enabled: true
+  aop:
+    auto: true
+    #hikari:
+      #idle-timeout: 60000
+      #maximum-pool-size: 30
+      #minimum-idle: 10
+  datasource:
+    druid:
+      master:
+        driverClassName: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.122.130:3306/qa?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+      slave1:
+        driverClassName: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.122.140:3306/qa?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+      slave2:
+        driverClassName: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://192.168.122.141:3306/qa?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: 123456
+        type: com.alibaba.druid.pool.DruidDataSource
+    # 连接池设置
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      # Oracle请使用select 1 from dual
+      validation-query: SELECT 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 合并多个DruidDataSource的监控数据
+      use-global-data-source-stat: true
+
+  #Redis配置
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 2
+    # Redis服务器地址
+    host: 127.0.0.1
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: 123456
+    # 连接超时时间（毫秒）
+    timeout: 10000
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 1024
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 10000
+        # 连接池中的最大空闲连接
+        max-idle: 200
+        # 连接池中的最小空闲连接
+        min-idle: 0
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+
+
+# mybatis plus配置
+mybatis-plus:
+  mapper-locations: classpath:/mybatis/*.xml #加载映射文件
+  type-aliases-package: com.cry.qa.domain #别名搜索的包
+  global-config:
+    db-config:
+      logic-delete-field: deleteFlag  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+  configuration:
+    lazy-loading-enabled: true #打开懒加载
+    aggressive-lazy-loading: false #关闭积极懒加载
+
+knife4j:
+  enable: true
+
+logging:
+  level:
+    com.baomidou.dynamic: debug
